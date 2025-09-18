@@ -1,0 +1,18 @@
+#!/bin/sh
+
+BASEPID=$$
+
+stop-handler() {
+	kill -TERM $BASEPID
+	kill -KILL $AGETTY_PID
+	kill -KILL $BASEPID
+	exit 0
+}
+
+trap stop-handler INT
+
+while true; do
+	/usr/bin/agetty 115200 "$1" linux &
+	AGETTY_PID=$!
+	wait $AGETTY_PID
+done

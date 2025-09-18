@@ -1,0 +1,6 @@
+# Agetty service
+
+Command=/usr/lib/helper-agetty $@
+Target=default
+Depend=elogind
+UseConsole=true

@@ -1,0 +1,8 @@
+pxinit/pkg/
+pxinit/src/
+pxinit/*.tar.*
+pxinit/*.zip
+pxscripts/pkg/
+pxscripts/src/
+pxscripts/*.tar.*
+pxscripts/*.zip

@@ -1,0 +1,3 @@
+StartCommand=/usr/lib/parallax/pxfsck
+Command=hang
+Target=fsmount

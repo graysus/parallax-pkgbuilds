@@ -1,0 +1,118 @@
+# Maintainer: GrayH <pjbbirdie@gmail.com>
+pkgname=('dbus-parallax' 'udev-parallax' 'elogind-parallax' 'networkmanager-parallax' 'sddm-parallax' 'openssh-parallax' 'cryptsetup-parallax' 'sysctl-parallax' 'ufw-parallax' 'chrony-parallax' 'pipewire-parallax' 'wireplumber-parallax' 'pipewire-pulse-parallax' 'ssh-agent-parallax' 'gpg-agent-parallax')
+pkgbase=parallax-scripts
+pkgver=0.01
+pkgrel=0
+epoch=
+pkgdesc="Init scripts for parallax"
+arch=(x86_64)
+url="https://github.com/graysus/parallax-services"
+license=('MIT')
+groups=()
+depends=()
+makedepends=()
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=(
+	"$pkgbase-$pkgver.zip::https://github.com/graysus/parallax-services/archive/refs/tags/$pkgver.zip"
+)
+noextract=()
+sha256sums=('52a67228a2e58a4d1bb10e2ddfc77de1c824f1425aacbd123304aa9c8634f310')
+validpgpkeys=(SKIP)
+
+prepare() {
+	true
+}
+
+build() {
+	true
+}
+
+check() {
+	true
+}
+
+package_all() {
+	pushd "parallax-services-$pkgver/services"
+
+	SVNAME=${1::-9}
+
+	# namcap doesn't like runtime dependencies but like who cares right
+	depends=(parallax)
+
+	case $SVNAME in
+		sysctl) depends+=(util-linux) ;;
+		ssh-agent) depends+=(openssh) ;;
+		gpg-agent) depends+=(gnupg) ;;
+		*) depends+=(${SVNAME}) ;;
+	esac
+
+	case $SVNAME in
+		elogind) depends+=(dbus-parallax) ;;
+		networkmanager) depends+=(udev-parallax elogind-parallax) ;;
+		cryptsetup) depends+=(udev-parallax device-mapper-parallax) ;;
+		sddm|openssh|chrony) depends+=(elogind-parallax) ;;
+		wireplumber|pipewire-pulse) depends+=(pipewire-parallax) ;;
+	esac
+
+	case $SVNAME in
+		# NetworkManager must be capitalized correctly
+		networkmanager) SVNAME=NetworkManager ;;
+		openssh) SVNAME=sshd ;;
+		udev) SVNAME=udevd ;;
+		chrony) SVNAME=chronyd ;;
+		elogind) provides=(init-elogind init-logind) ;;
+	esac
+
+	if [ -f "initscr_$SVNAME" ]; then
+		mkdir $pkgdir/usr/lib/parallax-service --parents
+		cp initscr_$SVNAME $pkgdir/usr/lib/parallax-service/$SVNAME
+	fi
+	if [ -f "initscr_$SVNAME:" ]; then
+		mkdir $pkgdir/usr/lib/parallax-service --parents
+		cp initscr_$SVNAME: $pkgdir/usr/lib/parallax-service/$SVNAME:
+	fi
+	if [ -f "user_helper_$SVNAME" ]; then
+		mkdir $pkgdir/usr/lib/ --parents
+		cp user_helper_$SVNAME $pkgdir/usr/lib/user-helper-$SVNAME
+	fi
+	if [ -f "user_initscr_$SVNAME" ]; then
+		mkdir $pkgdir/usr/lib/parallax-user-service --parents
+		cp user_initscr_$SVNAME $pkgdir/usr/lib/parallax-user-service/$SVNAME
+	fi
+	if [ -f "user_initscr_$SVNAME:" ]; then
+		mkdir $pkgdir/usr/lib/parallax-user-service --parents
+		cp user_initscr_$SVNAME: $pkgdir/usr/lib/parallax-user-service/$SVNAME:
+	fi
+	if [ -f "helper_$SVNAME" ]; then
+		mkdir $pkgdir/usr/lib/ --parents
+		cp helper_$SVNAME $pkgdir/usr/lib/helper-$SVNAME
+	fi
+	case $SVNAME in
+		udevd)
+			cp initscr_udevdtrigger $pkgdir/usr/lib/parallax-service/udevd-trigger
+			cp helper_udevdtrigger $pkgdir/usr/lib/helper-udevdtrigger
+			mkdir $pkgdir/usr/lib/parallax-target/boot/service-enable --parents
+			touch $pkgdir/usr/lib/parallax-target/boot/service-enable/udevd
+			touch $pkgdir/usr/lib/parallax-target/boot/service-enable/udevd-trigger
+			;;
+		dbus)
+			mkdir $pkgdir/usr/lib/parallax-{user-,}target/boot/service-enable --parents
+			touch $pkgdir/usr/lib/parallax-target/boot/service-enable/dbus
+			touch $pkgdir/usr/lib/parallax-user-target/boot/service-enable/dbus
+			;;
+	esac
+
+	popd
+}
+
+for i in "${pkgname[@]}"; do
+	eval "function package_$i { package_all $i; }"
+done

@@ -1,0 +1,86 @@
+# Maintainer: GrayH <pjbbirdie@gmail.com>
+pkgname=parallax
+pkgver=0.01
+pkgrel=0
+epoch=
+pkgdesc="Modern and portable init system"
+arch=("x86_64")
+url="https://github.com/graysus/${pkgname}-init"
+license=('MIT')
+groups=()
+depends=("glibc")
+makedepends=("gcc")
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=(openrc runit s6 dinit)
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("$pkgname-$pkgver.zip::https://github.com/graysus/${pkgname}-init/archive/refs/tags/${pkgver}.zip"
+	"initscr_agetty:"
+	"helper_agetty"
+	"initscr_fstab"
+)
+noextract=()
+sha256sums=('e38d3351e6fdcc0ed11f26ead1049a523ff1084415fc52305dad131e22d79eb9'
+            '9e2ade3dadee1a554be2dd646bdb7ab55bda3ed96d9f13d7190f7d5fe0ffd1a1'
+            '2fb6e04d3ba9524fdd791db33ec8312dec92be60b6bb8b7984b95548ebf6fb54'
+            '4fff9101a23f907f4130f5afa36c107b77b69d159f955a5f6a05f6ea9500507f')
+validpgpkeys=(SKIP)
+
+prepare() {
+	cd "${pkgname}-init-${pkgver}"
+}
+
+build() {
+	cd "${pkgname}-init-${pkgver}"
+	./configure
+	make -j$(nproc)
+}
+
+check() {
+	true
+}
+
+package() {
+	# the ol switcheroo
+	depends+=(elogind-parallax sysctl-parallax dbus-parallax)
+
+	# make install
+	cd "${pkgname}-init-${pkgver}"
+	make DESTDIR="$pkgdir/" install
+	cp -r extra/parallax-target $pkgdir/usr/lib/parallax-target
+
+	# remove sbin, it breaks the system
+	mv $pkgdir/sbin/* $pkgdir/usr/bin/
+	rmdir $pkgdir/sbin
+	
+	# rename init to openrc-init because goofy
+	mv $pkgdir/usr/bin/{init,openrc-init}
+
+	# configure parallax
+	mkdir --parents $pkgdir/usr/lib/parallax-service
+	mkdir --parents $pkgdir/usr/lib/parallax-target/{default,boot,fsmount}/{attribute,service-enable,service-disable}
+	rm $pkgdir/usr/lib/parallax-target/default/attribute/base
+	touch $pkgdir/usr/lib/parallax-target/boot/attribute/base
+	echo sendmsg target fsmount > $pkgdir/usr/lib/parallax-target/boot/colCommand
+	echo sendmsg target default > $pkgdir/usr/lib/parallax-target/fsmount/colCommand
+
+	# configure parallax user
+	mkdir --parents $pkgdir/usr/lib/parallax-user-service
+	mkdir --parents $pkgdir/usr/lib/parallax-user-target/{boot,logout}/{attribute,service-enable,service-disable}
+	touch $pkgdir/usr/lib/parallax-user-target/boot/attribute/base
+	touch $pkgdir/usr/lib/parallax-user-target/logout/attribute/daemon-shutdown
+	echo exit > $pkgdir/usr/lib/parallax-user-target/logout/colCommand
+
+	# install basic services and helpers
+	cp ../helper_agetty $pkgdir/usr/lib/helper-agetty
+	cp ../initscr_agetty: $pkgdir/usr/lib/parallax-service/agetty:
+	cp ../initscr_fstab $pkgdir/usr/lib/parallax-service/fstab
+	touch $pkgdir/usr/lib/parallax-target/default/service-enable/agetty:tty{1..6}
+	touch $pkgdir/usr/lib/parallax-target/fsmount/service-enable/fstab
+	touch $pkgdir/usr/lib/parallax-target/boot/service-enable/sysctl
+}
