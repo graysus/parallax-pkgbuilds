@@ -1,7 +1,7 @@
 # Maintainer: GrayH <pjbbirdie@gmail.com>
 pkgname=parallax
 pkgver=0.01
-pkgrel=0
+pkgrel=1
 epoch=
 pkgdesc="Modern and portable init system"
 arch=("x86_64")

@@ -1,8 +1,8 @@
-pxinit/pkg/
-pxinit/src/
-pxinit/*.tar.*
-pxinit/*.zip
-pxscripts/pkg/
-pxscripts/src/
-pxscripts/*.tar.*
-pxscripts/*.zip
+parallax/pkg/
+parallax/src/
+parallax/*.tar.*
+parallax/*.zip
+parallax-scripts/pkg/
+parallax-scripts/src/
+parallax-scripts/*.tar.*
+parallax-scripts/*.zip

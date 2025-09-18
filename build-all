@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+[ "$UID" -eq 0 ] || {
+	echo "Must be root..."
+	exit 1
+}
+
+PKGS=(parallax parallax-scripts)
+
+# don't mind the -Sy, we need it in the ISO
+pacman -Sy --needed base-devel
+
+useradd PXBUILDER
+
+for i in "${PKGS[@]}"; do
+	pushd "$i"
+
+	# -d so we don't conflict with the init in the user's chosen ISO
+	su -u PXBUILDER -c "makepkg -d"
+	pacman -Uwdd --noconfirm *.pkg.*
+
+	rm -rf pkg src *.pkg.* *.zip *.tar.*
+	popd
+done
+
+userdel PXBUILDER
+

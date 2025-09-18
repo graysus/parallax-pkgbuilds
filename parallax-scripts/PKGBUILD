@@ -2,7 +2,7 @@
 pkgname=('dbus-parallax' 'udev-parallax' 'elogind-parallax' 'networkmanager-parallax' 'sddm-parallax' 'openssh-parallax' 'cryptsetup-parallax' 'sysctl-parallax' 'ufw-parallax' 'chrony-parallax' 'pipewire-parallax' 'wireplumber-parallax' 'pipewire-pulse-parallax' 'ssh-agent-parallax' 'gpg-agent-parallax')
 pkgbase=parallax-scripts
 pkgver=0.01
-pkgrel=0
+pkgrel=1
 epoch=
 pkgdesc="Init scripts for parallax"
 arch=(x86_64)
