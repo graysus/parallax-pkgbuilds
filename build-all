@@ -10,17 +10,27 @@ PKGS=(parallax parallax-scripts)
 # don't mind the -Sy, we need it in the ISO
 pacman -Sy --needed base-devel
 
+[ -d build ] && rm -rf build
+mkdir build || exit 0
+
+BUILDPATH=$(realpath build)
+
 useradd PXBUILDER
 
 for i in "${PKGS[@]}"; do
-	pushd "$i"
+	TMPDIR="$(mktemp -d)"
+
+	cp -r "$i" "$TMPDIR"
+	pushd "$TMPDIR/$i"
+	chown -R PXBUILDER "$TMPDIR"
 
 	# -d so we don't conflict with the init in the user's chosen ISO
-	su -u PXBUILDER -c "makepkg -d"
-	pacman -Uwdd --noconfirm *.pkg.*
+	su PXBUILDER -c "makepkg -d"
+	mkdir --parents /var/cache/pacman/pkg
+	cp *.pkg.* "$BUILDPATH"
 
-	rm -rf pkg src *.pkg.* *.zip *.tar.*
 	popd
+	rm -rf "$TMPDIR"
 done
 
 userdel PXBUILDER

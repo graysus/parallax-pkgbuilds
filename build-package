@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+OUT=parallax-packages
+SIGN=
+
+for i in "$@"; do
+	case $i in
+		--sign)
+			SIGN=1
+			;;
+	esac
+done
+
+[ -d build ] || {
+	echo "You must run ./build-all first"
+	exit 1
+}
+
+[ -d "$OUT" ] && rm -rf "$OUT"
+
+mkdir --parents "$OUT"/packages
+cp -r keyring "$OUT"/keyring
+cp LICENSE "$OUT"/LICENSE
+
+cp build/*.pkg.tar.zst "$OUT"/packages/
+
+pushd "$OUT"/packages
+
+rm -f *.sig parallax.db* parallax.files*
+
+[ -n "$SIGN" ] && for i in *.pkg.tar.zst; do
+	gpg --output "$i.sig" --detach-sign "$i"
+done
+
+if [ -n "$SIGN" ]; then
+	repo-add --sign parallax.db.tar.gz *.pkg.tar.zst
+else
+	repo-add parallax.db.tar.gz *.pkg.tar.zst
+fi
+
+popd
+
+tar cf parallax-packages.tar.zst "$OUT"
+rm -rf "$OUT"
