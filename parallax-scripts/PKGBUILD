@@ -1,7 +1,22 @@
 # Maintainer: GrayH <pjbbirdie@gmail.com>
-pkgname=('dbus-parallax' 'udev-parallax' 'elogind-parallax' 'networkmanager-parallax' 'sddm-parallax' 'openssh-parallax' 'cryptsetup-parallax' 'sysctl-parallax' 'ufw-parallax' 'chrony-parallax' 'pipewire-parallax' 'wireplumber-parallax' 'pipewire-pulse-parallax' 'ssh-agent-parallax' 'gpg-agent-parallax')
+pkgname=('dbus-parallax'
+	'udev-parallax'
+	'elogind-parallax'
+	'networkmanager-parallax'
+	'sddm-parallax'
+	'openssh-parallax'
+	'cryptsetup-parallax'
+	'sysctl-parallax'
+	'ufw-parallax'
+	'chrony-parallax'
+	'pipewire-parallax'
+	'wireplumber-parallax'
+	'pipewire-pulse-parallax'
+	'ssh-agent-parallax'
+	'gpg-agent-parallax'
+	'lightdm-parallax')
 pkgbase=parallax-scripts
-pkgver=0.01
+pkgver=0.02
 pkgrel=1
 epoch=
 pkgdesc="Init scripts for parallax"
@@ -21,7 +36,7 @@ options=()
 install=
 changelog=
 source=(
-	"$pkgbase-$pkgver.zip::https://github.com/graysus/parallax-services/archive/refs/tags/$pkgver.zip"
+	"$pkgbase-$pkgver.zip::https://github.com/graysus/parallax-services/archive/refs/tags/$pkgver-1.zip"
 )
 noextract=()
 sha256sums=('52a67228a2e58a4d1bb10e2ddfc77de1c824f1425aacbd123304aa9c8634f310')
@@ -40,7 +55,7 @@ check() {
 }
 
 package_all() {
-	pushd "parallax-services-$pkgver/services"
+	pushd "parallax-services-$pkgver-1/services"
 
 	SVNAME=${1::-9}
 

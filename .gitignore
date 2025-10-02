@@ -6,3 +6,5 @@ parallax-scripts/pkg/
 parallax-scripts/src/
 parallax-scripts/*.tar.*
 parallax-scripts/*.zip
+build/
+parallax-packages.tar.zst

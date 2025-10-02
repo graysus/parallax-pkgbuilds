@@ -1,11 +1,12 @@
 # Maintainer: GrayH <pjbbirdie@gmail.com>
-pkgname=parallax
-pkgver=0.01
+pkgname=(parallax parallax-devel parallax-libs)
+pkgbase="parallax"
+pkgver=0.02
 pkgrel=1
 epoch=
 pkgdesc="Modern and portable init system"
 arch=("x86_64")
-url="https://github.com/graysus/${pkgname}-init"
+url="https://github.com/graysus/${pkgbase}-init"
 license=('MIT')
 groups=()
 depends=("glibc")
@@ -19,24 +20,24 @@ backup=()
 options=()
 install=
 changelog=
-source=("$pkgname-$pkgver.zip::https://github.com/graysus/${pkgname}-init/archive/refs/tags/${pkgver}.zip"
+source=("$pkgbase-$pkgver.zip::https://github.com/graysus/${basename}-init/archive/refs/tags/${pkgver}.zip"
 	"initscr_agetty:"
 	"helper_agetty"
 	"initscr_fstab"
 )
 noextract=()
-sha256sums=('e38d3351e6fdcc0ed11f26ead1049a523ff1084415fc52305dad131e22d79eb9'
+sha256sums=('9332ee3bcdf0d7e64e23249c6197b4b05642561ce867f2955180b8b43ec4041c'
             '9e2ade3dadee1a554be2dd646bdb7ab55bda3ed96d9f13d7190f7d5fe0ffd1a1'
             '2fb6e04d3ba9524fdd791db33ec8312dec92be60b6bb8b7984b95548ebf6fb54'
             '4fff9101a23f907f4130f5afa36c107b77b69d159f955a5f6a05f6ea9500507f')
 validpgpkeys=(SKIP)
 
 prepare() {
-	cd "${pkgname}-init-${pkgver}"
+	cd "${pkgbase}-init-${pkgver}"
 }
 
 build() {
-	cd "${pkgname}-init-${pkgver}"
+	cd "${pkgbase}-init-${pkgver}"
 	./configure
 	make -j$(nproc)
 }
@@ -45,12 +46,33 @@ check() {
 	true
 }
 
-package() {
+package_parallax-devel() {
+	depends+=(parallax-libs)
+
+	cd "${pkgbase}-init-${pkgver}"
+	make DESTDIR="$pkgdir/" install
+	rm -rf "$pkgdir/usr/bin" "$pkgdir/sbin" "$pkgdir/usr/lib"
+}
+
+package_parallax-libs() {
+	depends+=(util-linux)
+	
+	cd "parallax-init-${pkgver}"
+	
+	mkdir --parents "$pkgdir/usr/lib/parallax"
+
+	for i in parallax pxinternal pxipcserv; do
+		install -Dm755 -o0 "out/parallax/lib$i.so" "$pkgdir/usr/lib/parallax/lib$i.so"
+		ln -sf "parallax/lib$i.so" "$pkgdir/usr/lib/lib$i.so"
+	done
+}
+
+package_parallax() {
 	# the ol switcheroo
-	depends+=(elogind-parallax sysctl-parallax dbus-parallax)
+	depends+=(elogind-parallax sysctl-parallax dbus-parallax parallax-libs)
 
 	# make install
-	cd "${pkgname}-init-${pkgver}"
+	cd "parallax-init-${pkgver}"
 	make DESTDIR="$pkgdir/" install
 	cp -r extra/parallax-target $pkgdir/usr/lib/parallax-target
 
@@ -83,4 +105,8 @@ package() {
 	touch $pkgdir/usr/lib/parallax-target/default/service-enable/agetty:tty{1..6}
 	touch $pkgdir/usr/lib/parallax-target/fsmount/service-enable/fstab
 	touch $pkgdir/usr/lib/parallax-target/boot/service-enable/sysctl
+
+	rm -rf "$pkgdir/usr/lib/parallax/"lib*.so
+	rm -rf "$pkgdir/usr/lib/"lib*.so
+	rm -rf "$pkgdir/usr/include"
 }
