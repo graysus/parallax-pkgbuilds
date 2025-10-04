@@ -39,7 +39,7 @@ source=(
 	"$pkgbase-$pkgver.zip::https://github.com/graysus/parallax-services/archive/refs/tags/$pkgver-1.zip"
 )
 noextract=()
-sha256sums=('52a67228a2e58a4d1bb10e2ddfc77de1c824f1425aacbd123304aa9c8634f310')
+sha256sums=('2f6c89f17a97190024f4f923fa3e539aa9475d6575ea594cc7344a70a04aecd5')
 validpgpkeys=(SKIP)
 
 prepare() {
