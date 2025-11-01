@@ -1,7 +1,7 @@
 # Maintainer: GrayH <pjbbirdie@gmail.com>
 pkgname=(parallax parallax-devel parallax-libs)
 pkgbase="parallax"
-pkgver=0.03
+pkgver=0.04
 pkgrel=1
 epoch=
 pkgdesc="Modern and portable init system"
@@ -26,7 +26,7 @@ source=("$pkgbase-$pkgver.zip::https://github.com/graysus/${pkgbase}-init/archiv
 	"initscr_fstab"
 )
 noextract=()
-sha256sums=('f91fb11b39272ad7e4857c5772df32dc53b4c733a183ea6675d739e6ccc2c13c'
+sha256sums=('b8b15c4589b81305f52aaad65ba827dfadf994f1770591637f5c283565f9979a'
             '9e2ade3dadee1a554be2dd646bdb7ab55bda3ed96d9f13d7190f7d5fe0ffd1a1'
             '2fb6e04d3ba9524fdd791db33ec8312dec92be60b6bb8b7984b95548ebf6fb54'
             '4fff9101a23f907f4130f5afa36c107b77b69d159f955a5f6a05f6ea9500507f')
